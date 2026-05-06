@@ -9,6 +9,7 @@
       content="Hyper-visuele ervaring van Modeliq met interactieve woordruimte en black hole transities."
     />
     <link rel="stylesheet" href="styles.css" />
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>
   <body>
     <div class="starfield" aria-hidden="true"></div>
@@ -16,8 +17,16 @@
     <div class="nebula nebula-b" aria-hidden="true"></div>
 
     <header class="hud">
-      <h1 class="brand">MODELIQ</h1>
+      <div class="brand-mark" aria-label="Modeliq">
+        <span class="brand-word">MODELIQ</span>
+      </div>
       <p class="microcopy">Klik op een woord</p>
+      <div class="hud-actions">
+        <button class="hud-btn" id="aiHomeBtn" type="button">AI Routers</button>
+        <button class="hud-btn" id="openIntakeTop" type="button">Plan gratis intake</button>
+        <a class="hud-link" href="mailto:hallo@modeliq.nl">Direct contact</a>
+        <button class="hud-btn" id="openAdminBtn" type="button">Login</button>
+      </div>
     </header>
 
     <main class="space" id="space">
@@ -42,7 +51,10 @@
     </section>
 
     <aside class="lead-dock" id="leadDock" aria-label="Intake formulier">
-      <h2>Start je AI project</h2>
+      <div class="lead-head">
+        <h2>Start je AI project</h2>
+        <button id="leadClose" class="lead-close" type="button" aria-label="Sluit formulier">x</button>
+      </div>
       <form id="leadForm">
         <label for="name">Naam</label>
         <input id="name" name="name" type="text" required />
@@ -56,11 +68,341 @@
         <label for="goal">Wat wil je bouwen?</label>
         <textarea id="goal" name="goal" rows="3" required></textarea>
 
-        <button class="cta-btn" type="submit">Verstuur aanvraag</button>
+        <button class="cta-btn" id="leadSubmitBtn" type="submit">Verstuur aanvraag</button>
       </form>
       <p class="form-status" id="formStatus"></p>
     </aside>
     <button class="lead-toggle" id="leadToggle" type="button">Aanvraag</button>
+    <nav class="quick-actions" aria-label="Snelle keuzes">
+      <button type="button" class="quick-btn" data-topic="agents">AI Agents</button>
+      <button type="button" class="quick-btn" data-topic="automation">Automatisering</button>
+      <button type="button" class="quick-btn" data-topic="models">Voorspellen</button>
+    </nav>
+    <aside class="portfolio-dock" aria-label="Portfolio cases">
+      <div class="portfolio-head">
+        <h2>Portfolio</h2>
+        <span>Recente impact</span>
+      </div>
+      <div class="portfolio-cards" id="portfolioCards"></div>
+    </aside>
+    <aside class="agent-dock" id="agentDock" aria-label="Portfolio agent">
+      <button class="agent-toggle" id="agentToggle" type="button">Portfolio Agent</button>
+      <section class="agent-panel" id="agentPanel">
+        <div class="agent-head">
+          <h3>AI Portfolio Agent</h3>
+          <button class="lead-close" id="agentClose" type="button" aria-label="Sluit agent">x</button>
+        </div>
+        <div class="agent-messages" id="agentMessages"></div>
+        <form id="agentForm" class="agent-form">
+          <input
+            id="agentInput"
+            name="agentInput"
+            type="text"
+            placeholder="Bijv. ik wil iets met sales automation"
+            required
+          />
+          <button class="cta-btn" type="submit">Vraag</button>
+        </form>
+      </section>
+    </aside>
+    <section class="case-modal" id="caseModal" aria-hidden="true">
+      <article class="case-card">
+        <div class="admin-head">
+          <h2 id="caseTitle">Case</h2>
+          <button id="caseClose" class="lead-close" type="button" aria-label="Sluit case">x</button>
+        </div>
+        <p id="caseSector" class="admin-note"></p>
+        <p id="caseChallenge"></p>
+        <ul id="caseResults" class="vision-list"></ul>
+        <button class="cta-btn" id="caseCta" type="button">Ik wil dit ook</button>
+      </article>
+    </section>
+    <section class="invoice-template-modal" id="invoiceTemplateModal" aria-hidden="true">
+      <article class="invoice-template-card">
+        <div class="admin-head">
+          <h2>Factuur sjabloon</h2>
+          <button id="invoiceTemplateClose" class="lead-close" type="button" aria-label="Sluit factuur sjabloon">x</button>
+        </div>
+        <div id="invoiceTemplateContent" class="invoice-template-content"></div>
+        <div class="invoice-template-actions">
+          <button id="invoiceTemplatePrint" class="cta-btn" type="button">Print / PDF</button>
+        </div>
+      </article>
+    </section>
+    <section class="admin-modal" id="adminModal" aria-hidden="true">
+      <div class="admin-card">
+        <div class="admin-head">
+          <h2>Admin login</h2>
+          <button id="adminCloseBtn" class="lead-close" type="button" aria-label="Sluit admin login">x</button>
+        </div>
+        <form id="adminForm">
+          <label for="adminEmail">E-mail</label>
+          <input id="adminEmail" name="adminEmail" type="email" autocomplete="email" placeholder="berntjanbosma@gmail.com" />
+          <label for="adminUser">Gebruikersnaam</label>
+          <input id="adminUser" name="adminUser" type="text" autocomplete="username" />
+          <label for="adminPass">Wachtwoord</label>
+          <input id="adminPass" name="adminPass" type="password" autocomplete="current-password" />
+          <button class="hud-btn" id="adminEmailBtn" type="button">Inloggen met e-mail</button>
+          <button class="cta-btn" type="submit">Inloggen</button>
+          <button class="hud-btn" id="adminGoogleBtn" type="button">Inloggen met Google</button>
+        </form>
+        <p class="form-status" id="adminStatus"></p>
+      </div>
+    </section>
+
+    <aside class="admin-dock" id="adminDock" aria-label="Admin paneel">
+      <div class="lead-head">
+        <h2>Admin paneel</h2>
+        <button id="adminLogoutBtn" class="lead-close" type="button" aria-label="Uitloggen">x</button>
+      </div>
+      <p class="admin-note">Ingelogd. Hier kun je snel CTA en contact aanpassen.</p>
+      <nav class="admin-tabs" id="adminTabs">
+        <button type="button" class="admin-tab active" data-tab="dashboard">Dashboard</button>
+        <button type="button" class="admin-tab" data-tab="quotes">Offertes</button>
+        <button type="button" class="admin-tab" data-tab="invoices">Facturen</button>
+        <button type="button" class="admin-tab" data-tab="mail">Mail</button>
+        <button type="button" class="admin-tab" data-tab="bookkeeping">Boekhouding</button>
+        <button type="button" class="admin-tab" data-tab="settings">Instellingen</button>
+      </nav>
+
+      <section class="admin-panel active" data-panel="dashboard">
+        <div class="kpi-grid">
+          <article class="kpi-card"><span>Draft</span><strong id="kpiDraft">0</strong></article>
+          <article class="kpi-card"><span>Sent</span><strong id="kpiSent">0</strong></article>
+          <article class="kpi-card"><span>Accepted</span><strong id="kpiAccepted">0</strong></article>
+          <article class="kpi-card"><span>Invoiced</span><strong id="kpiInvoiced">0</strong></article>
+          <article class="kpi-card"><span>Openstaand</span><strong id="kpiOutstanding">EUR 0.00</strong></article>
+          <article class="kpi-card"><span>Achterstallig</span><strong id="kpiOverdue">EUR 0.00</strong></article>
+        </div>
+        <div class="book-summary" id="bookSummary">
+          <p>Omzet: <strong id="sumRevenue">EUR 0.00</strong></p>
+          <p>Kosten: <strong id="sumCosts">EUR 0.00</strong></p>
+          <p>BTW saldo: <strong id="sumVat">EUR 0.00</strong></p>
+          <p>Resultaat: <strong id="sumNet">EUR 0.00</strong></p>
+        </div>
+      </section>
+
+      <section class="admin-panel" data-panel="invoices">
+        <h3 class="admin-section-title">Facturen</h3>
+        <div class="book-actions">
+          <button id="invoiceRunAutomationBtn" class="hud-btn" type="button">Run automatisering</button>
+        </div>
+        <div class="book-table-wrap">
+          <table class="book-table">
+            <thead>
+              <tr>
+                <th>Factuur</th>
+                <th>Klant</th>
+                <th>Bedrag</th>
+                <th>Vervaldatum</th>
+                <th>Status</th>
+                <th>Acties</th>
+              </tr>
+            </thead>
+            <tbody id="invoiceRows"></tbody>
+          </table>
+        </div>
+        <p class="form-status" id="invoiceStatus"></p>
+      </section>
+
+      <section class="admin-panel" data-panel="mail">
+        <h3 class="admin-section-title">Mail centrum</h3>
+        <form id="mailApiForm" class="book-form">
+          <label for="mailApiBase">Mail API URL</label>
+          <input id="mailApiBase" name="mailApiBase" type="text" placeholder="http://localhost:3000" />
+          <button class="hud-btn" type="submit">API URL opslaan</button>
+        </form>
+        <form id="mailSendForm" class="book-form">
+          <label for="mailTo">Aan</label>
+          <input id="mailTo" name="mailTo" type="email" required />
+          <label for="mailSubject">Onderwerp</label>
+          <input id="mailSubject" name="mailSubject" type="text" required />
+          <label for="mailBody">Bericht</label>
+          <textarea id="mailBody" name="mailBody" rows="4" required></textarea>
+          <button class="cta-btn" type="submit">Verstuur mail</button>
+        </form>
+        <div class="book-actions">
+          <button id="mailSyncBtn" class="hud-btn" type="button">Inbox verversen</button>
+        </div>
+        <div class="book-table-wrap">
+          <table class="book-table">
+            <thead>
+              <tr>
+                <th>Datum</th>
+                <th>Van</th>
+                <th>Onderwerp</th>
+                <th>Snippet</th>
+              </tr>
+            </thead>
+            <tbody id="mailRows"></tbody>
+          </table>
+        </div>
+        <p class="form-status" id="mailStatus"></p>
+      </section>
+
+      <section class="admin-panel" data-panel="quotes">
+        <h3 class="admin-section-title">Offerteflow (Odoo-stijl)</h3>
+        <form id="quoteForm" class="book-form">
+          <label for="quoteCustomer">Klant</label>
+          <input id="quoteCustomer" name="quoteCustomer" type="text" required />
+          <label for="quoteCustomerEmail">Klant e-mail</label>
+          <input id="quoteCustomerEmail" name="quoteCustomerEmail" type="email" />
+          <label for="quoteTitle">Project / Offerte titel</label>
+          <input id="quoteTitle" name="quoteTitle" type="text" required />
+          <label for="quoteAmount">Bedrag (excl. btw)</label>
+          <input id="quoteAmount" name="quoteAmount" type="number" min="0" step="0.01" required />
+          <label for="quoteVat">BTW %</label>
+          <input id="quoteVat" name="quoteVat" type="number" min="0" step="0.01" value="21" required />
+          <button class="cta-btn" type="submit">Offerte aanmaken</button>
+        </form>
+        <div class="flow-board" id="quoteBoard">
+          <section class="flow-col">
+            <h4>Draft</h4>
+            <div id="flowDraft" class="flow-list"></div>
+          </section>
+          <section class="flow-col">
+            <h4>Sent</h4>
+            <div id="flowSent" class="flow-list"></div>
+          </section>
+          <section class="flow-col">
+            <h4>Accepted</h4>
+            <div id="flowAccepted" class="flow-list"></div>
+          </section>
+          <section class="flow-col">
+            <h4>Invoiced</h4>
+            <div id="flowInvoiced" class="flow-list"></div>
+          </section>
+        </div>
+        <p class="form-status" id="quoteStatus"></p>
+      </section>
+
+      <section class="admin-panel" data-panel="bookkeeping">
+        <h3 class="admin-section-title">Boekhouding</h3>
+        <div class="bank-connect">
+          <h4 class="bank-title">Bank koppelen</h4>
+          <form id="bankConnectForm" class="book-form">
+            <label for="bankProvider">Provider</label>
+            <select id="bankProvider" name="bankProvider" required>
+              <option value="gocardless">GoCardless / PSD2</option>
+              <option value="bunq">bunq API</option>
+              <option value="manual">Handmatig (CSV import)</option>
+            </select>
+            <label for="bankIban">IBAN</label>
+            <input id="bankIban" name="bankIban" type="text" placeholder="NL00BANK0123456789" required />
+            <label for="bankToken">API token / sleutel</label>
+            <input id="bankToken" name="bankToken" type="password" placeholder="••••••••" />
+            <button class="cta-btn" type="submit">Koppel bank</button>
+          </form>
+          <p class="form-status" id="bankStatus"></p>
+          <form id="bankImportForm" class="book-form">
+            <label for="bankCsv">Importeer transacties (CSV)</label>
+            <input id="bankCsv" name="bankCsv" type="file" accept=".csv,text/csv" required />
+            <button class="hud-btn" type="submit">Importeer naar boekhouding</button>
+          </form>
+          <p class="form-status" id="bankImportStatus"></p>
+        </div>
+        <form id="bookkeepingForm" class="book-form">
+          <label for="bookDate">Datum</label>
+          <input id="bookDate" name="bookDate" type="date" required />
+          <label for="bookType">Type</label>
+          <select id="bookType" name="bookType" required>
+            <option value="income">Inkomst</option>
+            <option value="expense">Uitgave</option>
+          </select>
+          <label for="bookDescription">Omschrijving</label>
+          <input id="bookDescription" name="bookDescription" type="text" required />
+          <label for="bookAmount">Bedrag (excl. btw)</label>
+          <input id="bookAmount" name="bookAmount" type="number" min="0" step="0.01" required />
+          <label for="bookVat">BTW %</label>
+          <input id="bookVat" name="bookVat" type="number" min="0" step="0.01" value="21" required />
+          <button class="cta-btn" type="submit">Boeking toevoegen</button>
+        </form>
+        <div class="book-actions">
+          <button id="bookExportBtn" class="hud-btn" type="button">Export CSV</button>
+        </div>
+        <div class="book-table-wrap">
+          <table class="book-table">
+            <thead>
+              <tr>
+                <th>Datum</th>
+                <th>Type</th>
+                <th>Omschrijving</th>
+                <th>Excl.</th>
+                <th>BTW</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="bookRows"></tbody>
+          </table>
+        </div>
+        <section class="vat-report" aria-label="Automatisch BTW rapport">
+          <h4 class="admin-section-title">Automatisch BTW rapport</h4>
+          <div class="vat-controls">
+            <label for="vatPeriodYear">Jaar</label>
+            <input id="vatPeriodYear" type="number" min="2020" max="2100" />
+            <label for="vatPeriodQuarter">Kwartaal</label>
+            <select id="vatPeriodQuarter">
+              <option value="1">Q1</option>
+              <option value="2">Q2</option>
+              <option value="3">Q3</option>
+              <option value="4">Q4</option>
+            </select>
+            <button id="vatCopyBtn" class="hud-btn" type="button">Kopieer BTW samenvatting</button>
+          </div>
+          <div class="vat-grid">
+            <label>Omzet 21%<input id="vatRevenue21" type="text" readonly /></label>
+            <label>Omzet 9%<input id="vatRevenue9" type="text" readonly /></label>
+            <label>Omzet 0%<input id="vatRevenue0" type="text" readonly /></label>
+            <label>BTW af te dragen<input id="vatOutputTax" type="text" readonly /></label>
+            <label>Voorbelasting<input id="vatInputTax" type="text" readonly /></label>
+            <label>Netto BTW<input id="vatNetTax" type="text" readonly /></label>
+          </div>
+          <p class="admin-note" id="vatReportSummary">Wordt automatisch berekend op basis van boekingen.</p>
+          <div class="book-table-wrap vat-report-wrap">
+            <table class="book-table">
+              <thead>
+                <tr>
+                  <th>Periode</th>
+                  <th>Af te dragen BTW</th>
+                  <th>Voorbelasting</th>
+                  <th>Saldo</th>
+                </tr>
+              </thead>
+              <tbody id="vatReportRows"></tbody>
+            </table>
+          </div>
+        </section>
+        <p class="form-status" id="bookStatus"></p>
+      </section>
+
+      <section class="admin-panel" data-panel="settings">
+        <h3 class="admin-section-title">Instellingen</h3>
+        <form id="adminSettingsForm">
+          <label for="adminCtaText">CTA knoptekst</label>
+          <input id="adminCtaText" name="adminCtaText" type="text" />
+          <label for="adminMail">Contact e-mail</label>
+          <input id="adminMail" name="adminMail" type="email" />
+          <label for="adminApiToken">Admin token (optioneel override)</label>
+          <input id="adminApiToken" name="adminApiToken" type="password" />
+          <button class="cta-btn" type="submit">Opslaan</button>
+        </form>
+        <p class="form-status" id="adminSaveStatus"></p>
+        <h3 class="admin-section-title">Automatisering</h3>
+        <form id="automationForm" class="book-form">
+          <label for="autoDueDays">Standaard betaaltermijn (dagen)</label>
+          <input id="autoDueDays" name="autoDueDays" type="number" min="1" max="90" value="14" required />
+          <label for="autoReminderDays">Herinnering na x dagen (comma separated)</label>
+          <input id="autoReminderDays" name="autoReminderDays" type="text" value="3,7,14" required />
+          <label class="toggle-row">
+            <input id="autoBookOnPaid" name="autoBookOnPaid" type="checkbox" checked />
+            Automatisch omzet boeken wanneer factuur betaald is
+          </label>
+          <button class="cta-btn" type="submit">Opslaan automatisering</button>
+        </form>
+        <p class="form-status" id="automationStatus"></p>
+      </section>
+
+    </aside>
 
     <script src="script.js"></script>
   </body>
