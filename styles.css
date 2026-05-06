@@ -146,8 +146,12 @@ body.admin-open .hud-actions {
   margin-top: 0.8rem;
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
   gap: 0.55rem;
   pointer-events: auto;
+  max-width: min(92vw, 920px);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .hud-btn,
@@ -233,7 +237,31 @@ body.admin-open .hud-actions {
   text-shadow: 0 0 15px rgba(141, 176, 255, 0.8);
   cursor: pointer;
   user-select: none;
-  transition: transform 0.22s ease, opacity 0.22s ease, filter 0.22s ease;
+  transition: filter 0.22s ease;
+  white-space: nowrap;
+  pointer-events: auto;
+  touch-action: manipulation;
+  border-radius: 999px;
+}
+
+.orbital-word[data-ring="0"] {
+  color: #f6f8ff;
+  text-shadow: 0 0 18px rgba(180, 200, 255, 0.85);
+}
+
+.orbital-word[data-ring="1"] {
+  color: #dfe6ff;
+  text-shadow: 0 0 14px rgba(140, 175, 255, 0.7);
+}
+
+.orbital-word[data-ring="2"] {
+  color: #c4d2ff;
+  text-shadow: 0 0 12px rgba(120, 150, 240, 0.55);
+}
+
+.orbital-word[data-ring="3"] {
+  color: #aab9ee;
+  text-shadow: 0 0 10px rgba(120, 150, 240, 0.45);
 }
 
 .orbital-word:hover {
@@ -264,7 +292,10 @@ body.admin-open .hud-actions {
   inset: 0;
   display: grid;
   place-items: center;
-  background: rgba(0, 0, 0, 0.92);
+  background:
+    radial-gradient(circle at 50% 38%, rgba(95, 119, 255, 0.22), transparent 60%),
+    radial-gradient(circle at 50% 80%, rgba(40, 70, 200, 0.18), transparent 65%),
+    rgba(0, 0, 0, 0.94);
   opacity: 0;
   visibility: hidden;
   z-index: 10;
@@ -277,39 +308,67 @@ body.admin-open .hud-actions {
 }
 
 .portal-hole {
-  width: 10vw;
-  height: 10vw;
-  min-width: 140px;
-  min-height: 140px;
+  position: relative;
+  width: 12vw;
+  height: 12vw;
+  min-width: 170px;
+  min-height: 170px;
   border-radius: 50%;
-  background: radial-gradient(circle at 46% 42%, #1b1b1b, #000 68%);
+  background: radial-gradient(circle at 38% 36%, #2a2c5d 0%, #11132e 55%, #050614 80%);
   box-shadow:
-    0 0 32px rgba(106, 123, 255, 0.45),
-    0 0 110px rgba(79, 114, 255, 0.28),
-    inset 0 0 30px rgba(0, 0, 0, 0.95);
+    0 0 36px rgba(106, 123, 255, 0.5),
+    0 0 130px rgba(79, 114, 255, 0.3),
+    inset 0 0 30px rgba(0, 0, 0, 0.92);
   animation: pulse 2.4s ease-in-out infinite;
+}
+
+.portal-hole::before,
+.portal-hole::after {
+  content: "";
+  position: absolute;
+  inset: -22%;
+  border-radius: 50%;
+  border: 1px solid rgba(168, 190, 255, 0.32);
+  transform: rotate(-18deg);
+  pointer-events: none;
+}
+
+.portal-hole::after {
+  inset: -42%;
+  border: 1px dashed rgba(168, 190, 255, 0.16);
+  transform: rotate(14deg);
 }
 
 .info-card {
   position: absolute;
   z-index: 12;
   width: min(90vw, 640px);
+  max-width: calc(100vw - 1.5rem);
   padding: 1.2rem 1.35rem;
   border-radius: 16px;
   border: 1px solid rgba(165, 188, 255, 0.35);
   background: rgba(8, 11, 28, 0.72);
   backdrop-filter: blur(12px);
   box-shadow: 0 0 50px rgba(95, 119, 255, 0.2);
+  overflow: hidden;
 }
 
 .vision-word {
   position: relative;
   margin: 0;
-  font-size: clamp(1.7rem, 6vw, 5.2rem);
-  letter-spacing: 0.1em;
+  display: block;
+  width: 100%;
+  font-size: clamp(1rem, 4.2vw, 3.2rem);
+  line-height: 1.06;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   text-shadow: 0 0 18px rgba(146, 176, 255, 0.95);
   animation: reveal 0.75s ease both;
+  overflow-wrap: normal;
+  word-break: normal;
+  white-space: normal;
+  text-wrap: balance;
+  max-width: 100%;
 }
 
 .vision-pitch {
@@ -327,11 +386,50 @@ body.admin-open .hud-actions {
   margin-bottom: 0.38rem;
 }
 
+.vision-extra {
+  margin: 0.7rem 0 0.4rem;
+  color: rgba(214, 225, 255, 0.85);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.vision-explore {
+  margin-top: 0.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.vision-explore-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(195, 213, 255, 0.78);
+  margin-right: 0.15rem;
+}
+
+.vision-explore-btn {
+  border: 1px solid rgba(186, 203, 255, 0.4);
+  background: rgba(8, 11, 28, 0.6);
+  color: #edf2ff;
+  border-radius: 999px;
+  padding: 0.32rem 0.7rem;
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.vision-explore-btn:hover {
+  background: rgba(124, 143, 255, 0.26);
+}
+
 .portal-actions {
   margin-top: 1rem;
   display: flex;
   gap: 0.8rem;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .cta-btn {
@@ -400,7 +498,7 @@ body.admin-open .hud-actions {
 
 .lead-toggle {
   position: fixed;
-  right: 1.2rem;
+  right: calc(1.3rem + 5px);
   bottom: 1.2rem;
   z-index: 21;
   border: 1px solid rgba(180, 200, 255, 0.35);
@@ -442,6 +540,18 @@ body.admin-open .hud-actions {
   background: rgba(255, 255, 255, 0.05);
   color: #fff;
   cursor: pointer;
+}
+
+.lead-dock .lead-close {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.lead-dock.open .lead-close {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 #leadForm {
@@ -509,11 +619,14 @@ body.admin-open .hud-actions {
   top: 7.6rem;
   z-index: 22;
   width: min(92vw, 380px);
+  max-width: calc(100vw - 2rem);
+  max-height: calc(100vh - 9rem);
   border-radius: 14px;
   border: 1px solid rgba(180, 200, 255, 0.25);
   background: rgba(4, 7, 19, 0.72);
   backdrop-filter: blur(8px);
   padding: 0.8rem;
+  overflow: auto;
 }
 
 .portfolio-head {
@@ -569,6 +682,9 @@ body.admin-open .hud-actions {
   top: 7.6rem;
   z-index: 23;
   width: min(92vw, 360px);
+  max-width: calc(100vw - 2rem);
+  max-height: calc(100vh - 9rem);
+  overflow: auto;
 }
 
 .agent-toggle {
@@ -688,6 +804,9 @@ body.admin-open .hud-actions {
 
 .case-card {
   width: min(92vw, 620px);
+  max-width: calc(100vw - 1.2rem);
+  max-height: calc(100vh - 1.2rem);
+  overflow: auto;
   padding: 1rem;
   border-radius: 14px;
   border: 1px solid rgba(180, 200, 255, 0.35);
@@ -848,6 +967,9 @@ body.admin-open .hud-actions {
 
 .admin-card {
   width: min(92vw, 380px);
+  max-width: calc(100vw - 1.2rem);
+  max-height: calc(100vh - 1.2rem);
+  overflow: auto;
   border-radius: 14px;
   border: 1px solid rgba(180, 200, 255, 0.35);
   background: rgba(8, 11, 28, 0.95);
@@ -974,7 +1096,10 @@ body.admin-open .hud-actions {
   letter-spacing: 0.06em;
   cursor: pointer;
   min-height: 38px;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.2;
 }
 
 .admin-tab.active {
@@ -1220,6 +1345,7 @@ body.admin-open .hud-actions {
 .flow-board {
   margin-top: 0.7rem;
   display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.5rem;
 }
 
@@ -1253,6 +1379,8 @@ body.admin-open .hud-actions {
 .quote-head {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
   gap: 0.5rem;
   font-size: 0.82rem;
 }
@@ -1402,6 +1530,10 @@ body.admin-open .hud-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .flow-board {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .portfolio-dock {
     left: 0.4rem;
     right: 0.4rem;
@@ -1417,6 +1549,7 @@ body.admin-open .hud-actions {
     width: auto;
     top: auto;
     bottom: 6.8rem;
+    max-height: 40dvh;
   }
 
   .agent-messages {
@@ -1433,6 +1566,7 @@ body.admin-open .hud-actions {
   .case-card,
   .info-card {
     width: 100%;
+    max-width: 100%;
   }
 
   .kpi-grid {
@@ -1449,6 +1583,23 @@ body.admin-open .hud-actions {
 
   .vat-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .vision-word {
+    font-size: clamp(0.95rem, 7vw, 1.45rem);
+    letter-spacing: 0.03em;
+  }
+
+  .flow-board,
+  .kpi-grid,
+  .vat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hud-actions {
+    max-width: calc(100vw - 1rem);
   }
 }
 

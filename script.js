@@ -3,73 +3,85 @@ const words = [
     orbit: "impact",
     vision: "Impact",
     pitch: "We bouwen AI-oplossingen die binnen 6-8 weken resultaat laten zien.",
-    bullets: ["Snelle pilot", "Heldere KPI's", "Focus op omzet en efficiëntie"]
+    bullets: ["Snelle pilot", "Heldere KPI's", "Focus op omzet en efficiëntie"],
+    world: "In de wereld van Impact werken we naar concrete waarde toe. Geen experimenten zonder doel, maar AI-pilots met meetbare uitkomsten en een duidelijke business case binnen één kwartaal."
   },
   {
     orbit: "intelligence",
     vision: "Inzicht",
     pitch: "Van ruwe data naar stuurinformatie waarop teams direct kunnen handelen.",
-    bullets: ["Dashboarding", "Voorspellingen", "Datakwaliteit en governance"]
+    bullets: ["Dashboarding", "Voorspellingen", "Datakwaliteit en governance"],
+    world: "Inzicht draait om data die spreekt. We brengen je bronnen samen, leggen er voorspellende modellen op en vertalen alles naar dashboards waarmee je team beter en sneller beslist."
   },
   {
     orbit: "velocity",
     vision: "Versnelling",
     pitch: "Automatiseer repetitief werk zodat je team tijd wint op dagelijkse processen.",
-    bullets: ["Workflow automation", "Minder handwerk", "Meer output per team"]
+    bullets: ["Workflow automation", "Minder handwerk", "Meer output per team"],
+    world: "Versnelling betekent dat handmatige stappen verdwijnen. Workflows, integraties en agents pakken het herhaalwerk op, zodat mensen zich richten op werk dat er echt toe doet."
   },
   {
     orbit: "automation",
     vision: "Automatisering",
     pitch: "Agents en integraties die tickets, offertes en opvolging automatisch uitvoeren.",
-    bullets: ["CRM-integraties", "Support automation", "Kwaliteitscontroles"]
+    bullets: ["CRM-integraties", "Support automation", "Kwaliteitscontroles"],
+    world: "Automatisering is een groeiende constellatie van agents, koppelingen en kwaliteitsregels die jouw kernprocessen 24/7 laten draaien zonder bottlenecks of stille fouten."
   },
   {
     orbit: "clarity",
     vision: "Helderheid",
     pitch: "Elke oplossing krijgt een duidelijke scope, planning en business case.",
-    bullets: ["Scope in 1 sessie", "Transparante aanpak", "Geen black-box project"]
+    bullets: ["Scope in 1 sessie", "Transparante aanpak", "Geen black-box project"],
+    world: "Helderheid is de eerste planeet die je raakt: scope, planning en verwachtingen worden helder voordat er één regel code wordt geschreven, zodat je nooit verrast wordt."
   },
   {
     orbit: "trust",
     vision: "Vertrouwen",
     pitch: "We leveren veilig, compliant en uitlegbaar voor jouw organisatie.",
-    bullets: ["Veilige architectuur", "Mens in de lus", "Audit-trace en controles"]
+    bullets: ["Veilige architectuur", "Mens in de lus", "Audit-trace en controles"],
+    world: "Vertrouwen ligt in de architectuur: rolgebaseerde toegang, audit-trails, mens-in-de-lus controles en uitlegbare modellen. AI die je organisatie met een gerust hart durft uit te rollen."
   },
   {
     orbit: "focus",
     vision: "Focus",
     pitch: "We kiezen alleen use-cases met directe bedrijfswaarde en haalbare implementatie.",
-    bullets: ["Prioritering", "Roadmap", "Snel besluitvormingstraject"]
+    bullets: ["Prioritering", "Roadmap", "Snel besluitvormingstraject"],
+    world: "Focus betekent selectief zijn. Niet elk idee verdient een implementatie. We prioriteren op waarde, haalbaarheid en snelheid zodat je portfolio scherp en uitvoerbaar blijft."
   },
   {
     orbit: "agents",
     vision: "AI Agents",
     pitch: "Digitale collega's die zelfstandig taken oppakken binnen jouw processen.",
-    bullets: ["Sales agents", "Support agents", "Interne copilots"]
+    bullets: ["Sales agents", "Support agents", "Interne copilots"],
+    world: "AI Agents zijn jouw digitale collega's. Sales-agents volgen leads op, support-agents triageren tickets en interne copilots ondersteunen kennismedewerkers in hun dagelijkse beslissingen."
   },
   {
     orbit: "growth",
     vision: "Groei",
     pitch: "Gebruik AI als groeimotor voor betere klantservice en schaalbaarheid.",
-    bullets: ["Meer conversie", "Snellere time-to-market", "Kostenverlaging"]
+    bullets: ["Meer conversie", "Snellere time-to-market", "Kostenverlaging"],
+    world: "Groei is het effect dat ontstaat als impact en automatisering elkaar versterken: hogere conversie, kortere doorlooptijden en lagere kosten per transactie, zonder extra hoofden."
   },
   {
     orbit: "future",
     vision: "Toekomst",
     pitch: "We bouwen vandaag wat je organisatie morgen onderscheidend maakt.",
-    bullets: ["Future-proof stack", "Schaalbaar ontwerp", "Langetermijnvisie"]
+    bullets: ["Future-proof stack", "Schaalbaar ontwerp", "Langetermijnvisie"],
+    world: "Toekomst is de buitenste baan: we ontwerpen oplossingen die morgen nog relevant zijn, met modulaire architectuur en een roadmap die met je organisatie meegroeit."
   },
   {
     orbit: "signal",
     vision: "Signaal",
     pitch: "Detecteer trends, afwijkingen en kansen eerder dan je concurrentie.",
-    bullets: ["Anomaly detection", "Waarschuwingsflows", "Realtime inzichten"]
+    bullets: ["Anomaly detection", "Waarschuwingsflows", "Realtime inzichten"],
+    world: "Signaal pikt op wat dashboards missen: realtime detectie van afwijkingen, kansen en risico's, vertaald naar werkbare acties voor de juiste persoon op het juiste moment."
   },
   {
     orbit: "models",
     vision: "Modellen",
     pitch: "Van modelselectie tot productie: wij zorgen dat AI ook echt werkt in de praktijk.",
-    bullets: ["Modelontwikkeling", "Monitoring", "Doorlopende optimalisatie"]
+    bullets: ["Modelontwikkeling", "Monitoring", "Doorlopende optimalisatie"],
+    world: "Modellen zijn de motoren van het systeem. Wij selecteren, trainen, monitoren en verbeteren ze continu zodat ze niet alleen ooit goed werkten, maar ook morgen nog presteren."
   }
 ];
 
@@ -264,30 +276,78 @@ const state = {
   time: 0
 };
 
+const ORBIT_RING_DEFS = [
+  { tilt: 0.08, speedSign: 1, fontScale: 1.05 },
+  { tilt: 0.34, speedSign: -1, fontScale: 0.95 },
+  { tilt: -0.22, speedSign: 1, fontScale: 0.85 },
+  { tilt: 0.5, speedSign: -1, fontScale: 0.78 }
+];
+
+function computeOrbitRings() {
+  const w = Math.min(window.innerWidth, 1400);
+  const h = window.innerHeight;
+  const baseUnit = Math.max(110, Math.min(w, h * 1.4) / 6.6);
+  return ORBIT_RING_DEFS.map((def, i) => ({
+    ...def,
+    radius: baseUnit * (1.05 + i * 0.7),
+    speed: def.speedSign * (0.0009 + (ORBIT_RING_DEFS.length - i) * 0.00035)
+  }));
+}
+
+let orbitRings = computeOrbitRings();
+const ringAssignments = words.map((_, i) => i % orbitRings.length);
+const ringTotals = orbitRings.map(
+  (_, ri) => ringAssignments.filter((r) => r === ri).length
+);
+const ringSlotCounters = orbitRings.map(() => 0);
+
 const orbitalNodes = words.map((item, index) => {
+  const ringIndex = ringAssignments[index];
+  const slotIndex = ringSlotCounters[ringIndex]++;
+  const ringTotal = ringTotals[ringIndex] || 1;
+  const ring = orbitRings[ringIndex];
+
   const node = document.createElement("button");
   node.type = "button";
   node.className = "orbital-word";
+  node.dataset.ring = String(ringIndex);
   node.textContent = item.orbit;
-  node.setAttribute("aria-label", `Open info: ${item.vision}`);
-  node.style.fontSize = `${0.8 + (index % 3) * 0.28}rem`;
+  node.setAttribute("aria-label", `Open wereld: ${item.vision}`);
+  node.style.fontSize = `${0.78 + ring.fontScale * 0.22}rem`;
   node.style.background = "transparent";
   node.style.border = "0";
-  node.style.padding = "0.2rem";
+  node.style.padding = "0.34rem 0.46rem";
   node.style.font = "inherit";
   node.style.color = "inherit";
 
-  node.addEventListener("click", () => openPortal(item));
+  const openWordInfo = (event) => {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    openPortal(item);
+  };
+
+  node.addEventListener("pointerdown", openWordInfo);
+  node.addEventListener("click", openWordInfo);
+  node.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      openWordInfo(event);
+    }
+  });
   wordLayer.appendChild(node);
 
   return {
     node,
-    angle: Math.random() * Math.PI * 2,
-    radius: 120 + Math.random() * 250,
-    depth: Math.random() * 800 - 400,
-    speed: 0.0012 + Math.random() * 0.0018,
-    wobble: 8 + Math.random() * 16
+    ringIndex,
+    angle: (slotIndex / ringTotal) * Math.PI * 2 + ringIndex * 0.4,
+    bobPhase: Math.random() * Math.PI * 2,
+    bobAmp: 3 + Math.random() * 4
   };
+});
+
+window.addEventListener("resize", () => {
+  orbitRings = computeOrbitRings();
 });
 
 function openPortal(itemData) {
@@ -299,6 +359,46 @@ function openPortal(itemData) {
     li.textContent = line;
     visionList.appendChild(li);
   });
+
+  const card = visionWord.closest(".info-card");
+  if (card) {
+    card.dataset.world = itemData.orbit;
+
+    const actions = card.querySelector(".portal-actions");
+    let extra = card.querySelector(".vision-extra");
+    if (!extra) {
+      extra = document.createElement("p");
+      extra.className = "vision-extra";
+      card.insertBefore(extra, actions);
+    }
+    extra.textContent = itemData.world || "";
+
+    let explore = card.querySelector(".vision-explore");
+    if (!explore) {
+      explore = document.createElement("nav");
+      explore.className = "vision-explore";
+      explore.setAttribute("aria-label", "Andere werelden");
+      card.insertBefore(explore, actions);
+    }
+    explore.innerHTML = "";
+
+    const exploreLabel = document.createElement("span");
+    exploreLabel.className = "vision-explore-label";
+    exploreLabel.textContent = "Andere werelden";
+    explore.appendChild(exploreLabel);
+
+    const currentIndex = words.indexOf(itemData);
+    const otherCount = Math.min(4, words.length - 1);
+    for (let i = 1; i <= otherCount; i++) {
+      const other = words[(currentIndex + i) % words.length];
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "vision-explore-btn";
+      btn.textContent = other.vision;
+      btn.addEventListener("click", () => openPortal(other));
+      explore.appendChild(btn);
+    }
+  }
 
   portal.classList.add("active");
   portal.setAttribute("aria-hidden", "false");
@@ -2581,20 +2681,23 @@ function animate(now) {
   const tiltY = state.mouseX * (isCoarsePointer ? -5 : -14);
   space.style.transform = `perspective(900px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
 
-  orbitalNodes.forEach((item, index) => {
-    item.angle += item.speed;
+  orbitalNodes.forEach((item) => {
+    const ring = orbitRings[item.ringIndex];
+    item.angle += ring.speed;
 
-    const pulse = Math.sin(state.time * 0.0012 + index) * item.wobble;
-    const x = Math.cos(item.angle) * (item.radius + pulse);
-    const y = Math.sin(item.angle * 1.25) * (item.radius * 0.35 + pulse);
-    const z = Math.sin(item.angle * 0.7 + index) * item.depth;
+    const x = Math.cos(item.angle) * ring.radius;
+    const yPlane = Math.sin(item.angle) * ring.radius;
+    const y = yPlane * Math.cos(ring.tilt);
+    const z = yPlane * Math.sin(ring.tilt);
+    const bob = Math.sin(state.time * 0.0014 + item.bobPhase) * item.bobAmp;
 
-    const perspective = 700;
+    const perspective = 720;
     const scale = (perspective + z) / perspective;
-    const alpha = Math.max(0.25, Math.min(1, scale));
+    const alpha = Math.max(0.4, Math.min(1, scale));
 
-    item.node.style.transform = `translate3d(${x}px, ${y}px, ${z}px) scale(${scale})`;
+    item.node.style.transform = `translate3d(${x}px, ${y + bob}px, ${z}px) scale(${scale})`;
     item.node.style.opacity = `${alpha}`;
+    item.node.style.zIndex = String(1000 + Math.round(z));
   });
 
   requestAnimationFrame(animate);
