@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modeliq | Vision Space</title>
+    <meta
+      name="description"
+      content="Hyper-visuele ervaring van Modeliq met interactieve woordruimte en black hole transities."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="starfield" aria-hidden="true"></div>
+    <div class="nebula nebula-a" aria-hidden="true"></div>
+    <div class="nebula nebula-b" aria-hidden="true"></div>
+
+    <header class="hud">
+      <h1 class="brand">MODELIQ</h1>
+      <p class="microcopy">Klik op een woord</p>
+    </header>
+
+    <main class="space" id="space">
+      <div class="core-glow" aria-hidden="true"></div>
+      <div class="ring ring-a" aria-hidden="true"></div>
+      <div class="ring ring-b" aria-hidden="true"></div>
+      <div class="word-layer" id="wordLayer" aria-live="polite"></div>
+    </main>
+
+    <section class="portal" id="portal" aria-hidden="true">
+      <div class="portal-hole"></div>
+      <div class="vision-word" id="visionWord">IMPACT</div>
+      <button class="back-btn" id="backBtn" type="button">Terug</button>
+    </section>
+
+    <script src="script.js"></script>
+  </body>
+</html>
