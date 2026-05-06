@@ -29,9 +29,38 @@
 
     <section class="portal" id="portal" aria-hidden="true">
       <div class="portal-hole"></div>
-      <div class="vision-word" id="visionWord">IMPACT</div>
+      <article class="info-card">
+        <h2 class="vision-word" id="visionWord">IMPACT</h2>
+        <p class="vision-pitch" id="visionPitch"></p>
+        <ul class="vision-list" id="visionList"></ul>
+        <div class="portal-actions">
+          <button class="cta-btn" id="leadBtn" type="button">Plan intake</button>
+          <a class="ghost-link" href="mailto:hallo@modeliq.nl">Mail direct</a>
+        </div>
+      </article>
       <button class="back-btn" id="backBtn" type="button">Terug</button>
     </section>
+
+    <aside class="lead-dock" id="leadDock" aria-label="Intake formulier">
+      <h2>Start je AI project</h2>
+      <form id="leadForm">
+        <label for="name">Naam</label>
+        <input id="name" name="name" type="text" required />
+
+        <label for="company">Bedrijf</label>
+        <input id="company" name="company" type="text" required />
+
+        <label for="email">E-mail</label>
+        <input id="email" name="email" type="email" required />
+
+        <label for="goal">Wat wil je bouwen?</label>
+        <textarea id="goal" name="goal" rows="3" required></textarea>
+
+        <button class="cta-btn" type="submit">Verstuur aanvraag</button>
+      </form>
+      <p class="form-status" id="formStatus"></p>
+    </aside>
+    <button class="lead-toggle" id="leadToggle" type="button">Aanvraag</button>
 
     <script src="script.js"></script>
   </body>
