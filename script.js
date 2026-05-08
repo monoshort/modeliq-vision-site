@@ -801,13 +801,19 @@ function createId(prefix) {
   return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
 }
 
+const STATIC_DEV_PORTS = new Set(["5500", "5173", "5174", "8080", "4200", "8000"]);
+
 function getApiBase() {
   const custom = (mailApiBaseInput?.value || "").trim();
   if (custom) {
     return custom.replace(/\/$/, "");
   }
-  if (window.location.origin.startsWith("http")) {
-    return window.location.origin;
+  const origin = window.location.origin || "";
+  if (origin.startsWith("http")) {
+    if (STATIC_DEV_PORTS.has(window.location.port)) {
+      return DEFAULT_API_BASE;
+    }
+    return origin;
   }
   return DEFAULT_API_BASE;
 }
@@ -1913,15 +1919,41 @@ if (agentForm) {
   });
 }
 
+const LEAD_FALLBACK_KEY = "modeliq_lead_fallback";
+const FALLBACK_CONTACT_EMAIL = "hallo@modeliq.nl";
+
+function storeLeadLocally(lead) {
+  try {
+    const raw = localStorage.getItem(LEAD_FALLBACK_KEY);
+    const list = raw ? JSON.parse(raw) : [];
+    list.push({ ...lead, savedAt: new Date().toISOString() });
+    localStorage.setItem(LEAD_FALLBACK_KEY, JSON.stringify(list));
+  } catch {
+    // ignore storage failures (private mode etc.)
+  }
+}
+
+function openLeadMailto(lead) {
+  const subject = `Aanvraag van ${lead.name} (${lead.company})`;
+  const body =
+    `Naam: ${lead.name}\n` +
+    `Bedrijf: ${lead.company}\n` +
+    `E-mail: ${lead.email}\n\n` +
+    `Wat ze willen bouwen:\n${lead.goal}\n`;
+  window.location.href = `mailto:${FALLBACK_CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
 if (leadForm) {
   leadForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     const data = new FormData(leadForm);
-    const name = String(data.get("name") || "").trim();
-    const company = String(data.get("company") || "").trim();
-    const email = String(data.get("email") || "").trim();
-    const goal = String(data.get("goal") || "").trim();
-    if (!name || !company || !email || !goal) {
+    const lead = {
+      name: String(data.get("name") || "").trim(),
+      company: String(data.get("company") || "").trim(),
+      email: String(data.get("email") || "").trim(),
+      goal: String(data.get("goal") || "").trim()
+    };
+    if (!lead.name || !lead.company || !lead.email || !lead.goal) {
       formStatus.textContent = "Vul alle velden in voor een complete aanvraag.";
       return;
     }
@@ -1930,12 +1962,15 @@ if (leadForm) {
       await apiRequest("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, company, email, goal })
+        body: JSON.stringify(lead)
       });
       formStatus.textContent = "Bedankt! Je aanvraag is veilig opgeslagen.";
       leadForm.reset();
-    } catch (error) {
-      formStatus.textContent = error instanceof Error ? error.message : "Aanvraag opslaan mislukt.";
+    } catch {
+      storeLeadLocally(lead);
+      openLeadMailto(lead);
+      formStatus.textContent = "Server niet bereikbaar — we openen je mailclient zodat je aanvraag direct verstuurd kan worden.";
+      leadForm.reset();
     }
   });
 }
