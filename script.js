@@ -99,6 +99,8 @@ const formStatus = document.getElementById("formStatus");
 const nameInput = document.getElementById("name");
 const leadToggle = document.getElementById("leadToggle");
 const leadClose = document.getElementById("leadClose");
+const leadBackBtn = document.getElementById("leadBackBtn");
+const overlayScrim = document.getElementById("overlayScrim");
 const aiHomeBtn = document.getElementById("aiHomeBtn");
 const openIntakeTop = document.getElementById("openIntakeTop");
 const quickButtons = Array.from(document.querySelectorAll(".quick-btn"));
@@ -112,6 +114,7 @@ const adminGoogleBtn = document.getElementById("adminGoogleBtn");
 const adminStatus = document.getElementById("adminStatus");
 const adminDock = document.getElementById("adminDock");
 const adminLogoutBtn = document.getElementById("adminLogoutBtn");
+const adminBackBtn = document.getElementById("adminBackBtn");
 const adminSettingsForm = document.getElementById("adminSettingsForm");
 const adminSaveStatus = document.getElementById("adminSaveStatus");
 const adminCtaText = document.getElementById("adminCtaText");
@@ -160,9 +163,6 @@ const kpiAccepted = document.getElementById("kpiAccepted");
 const kpiInvoiced = document.getElementById("kpiInvoiced");
 const kpiOutstanding = document.getElementById("kpiOutstanding");
 const kpiOverdue = document.getElementById("kpiOverdue");
-const invoiceRows = document.getElementById("invoiceRows");
-const invoiceStatus = document.getElementById("invoiceStatus");
-const invoiceRunAutomationBtn = document.getElementById("invoiceRunAutomationBtn");
 const mailApiForm = document.getElementById("mailApiForm");
 const mailApiBaseInput = document.getElementById("mailApiBase");
 const mailSendForm = document.getElementById("mailSendForm");
@@ -186,10 +186,6 @@ const caseSector = document.getElementById("caseSector");
 const caseChallenge = document.getElementById("caseChallenge");
 const caseResults = document.getElementById("caseResults");
 const caseCta = document.getElementById("caseCta");
-const invoiceTemplateModal = document.getElementById("invoiceTemplateModal");
-const invoiceTemplateClose = document.getElementById("invoiceTemplateClose");
-const invoiceTemplateContent = document.getElementById("invoiceTemplateContent");
-const invoiceTemplatePrint = document.getElementById("invoiceTemplatePrint");
 const agentDock = document.getElementById("agentDock");
 const agentToggle = document.getElementById("agentToggle");
 const agentPanel = document.getElementById("agentPanel");
@@ -207,7 +203,6 @@ const CLICK_ZONE_SELECTORS = [
   ".portfolio-item",
   ".agent-panel",
   ".case-card",
-  ".invoice-template-card",
   ".info-card",
   ".admin-head",
   ".admin-note"
@@ -230,7 +225,6 @@ let quotes = [];
 let candidateFits = [];
 let invoices = [];
 let inboxMessages = [];
-let activeInvoiceTemplate = null;
 let googleGsiInitialized = false;
 let googleGsiClientId = "";
 let googleGsiResponseHandler = null;
@@ -242,7 +236,7 @@ let automationSettings = {
   autoBookOnPaid: true
 };
 const DEFAULT_INVOICE_NUMBER = "INV-2026-0001";
-const DEFAULT_INVOICE_EMAIL = "finance@webston.nl";
+const DEFAULT_INVOICE_EMAIL = "finance@modeliq.nl";
 const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
 const portfolioCases = [
   {
@@ -426,11 +420,17 @@ function goHomeView() {
   closePortal();
   closeCaseModal();
   closeAdminModal();
+  adminDock.classList.remove("open");
   leadDock.classList.remove("open");
+  document.body.classList.remove("admin-open", "lead-open", "portal-open");
+  if (typeof window !== "undefined") {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }
 }
 
 function openLeadDock(prefillTopic = "") {
   leadDock.classList.add("open");
+  document.body.classList.add("lead-open");
   if (prefillTopic) {
     const goalInput = document.getElementById("goal");
     if (goalInput && !goalInput.value.trim()) {
@@ -440,6 +440,11 @@ function openLeadDock(prefillTopic = "") {
   if (nameInput) {
     nameInput.focus();
   }
+}
+
+function closeLeadDock() {
+  leadDock.classList.remove("open");
+  document.body.classList.remove("lead-open");
 }
 
 function openCaseModal(portfolioCase) {
@@ -640,9 +645,6 @@ function getClickZoneMessage(zone) {
   }
   if (zone.closest("[data-panel='bookkeeping']")) {
     return "Boekhouding actief.";
-  }
-  if (zone.closest("[data-panel='invoices']")) {
-    return "Factuurgedeelte actief.";
   }
   if (zone.closest("[data-panel='quotes']")) {
     return "Offerteflow actief.";
@@ -1755,148 +1757,12 @@ function createInvoiceFromQuote(quote) {
   return invoice;
 }
 
-async function sendInvoiceMail(invoice, type = "invoice") {
-  const subjectPrefix = type === "reminder" ? "Betaalherinnering" : "Factuur";
-  const subject = `${subjectPrefix} ${invoice.number} - ${invoice.customer}`;
-  const body = 
-    `Beste ${invoice.customer},\n\n` +
-      `${type === "reminder" ? "Dit is een herinnering voor de openstaande factuur." : "Hierbij sturen we je factuur."}\n` +
-      `Factuur: ${invoice.number}\n` +
-      `Omschrijving: ${invoice.title}\n` +
-      `Bedrag excl. btw: ${formatEur(invoice.amount)}\n` +
-      `BTW: ${invoice.vat}%\n` +
-      `Vervaldatum: ${invoice.dueDate}\n\n` +
-      `Met vriendelijke groet,\nModeliq`;
-  try {
-    await sendMail({
-      to: invoice.customerEmail || DEFAULT_INVOICE_EMAIL,
-      subject,
-      text: body
-    });
-  } catch {
-    const recipient = encodeURIComponent(String(invoice.customerEmail || "").trim());
-    window.location.href = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  }
-}
-
-async function createInvoicePdf(invoice) {
-  const base = getApiBase();
-  if (!base) {
-    throw new Error("API URL ontbreekt.");
-  }
-  const response = await fetch(`${base}/api/invoices/pdf`, {
-    method: "POST",
-    headers: getApiHeaders(),
-    body: JSON.stringify({ invoice })
-  });
-  if (!response.ok) {
-    const payload = await response.json().catch(() => ({}));
-    throw new Error(payload.error || "PDF genereren mislukt.");
-  }
-  return response.blob();
-}
-
-async function downloadInvoicePdf(invoice) {
-  try {
-    const blob = await createInvoicePdf(invoice);
-    const url = URL.createObjectURL(blob);
-    const safeName = String(invoice.number || "factuur").replace(/[^A-Za-z0-9_-]/g, "_");
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${safeName}.pdf`;
-    link.click();
-    URL.revokeObjectURL(url);
-    return "download";
-  } catch {
-    activeInvoiceTemplate = invoice;
-    printActiveInvoiceTemplate();
-    return "print";
-  }
-}
-
-async function mailInvoicePdf(invoice, type = "invoice") {
-  if (!invoice.customerEmail) {
-    invoice.customerEmail = String(
-      window.prompt(`E-mailadres voor factuur ${invoice.number}:`, DEFAULT_INVOICE_EMAIL) || ""
-    ).trim();
-  }
-  if (!invoice.customerEmail) {
-    throw new Error("Geen ontvanger opgegeven.");
-  }
-  const subjectPrefix = type === "reminder" ? "Betaalherinnering" : "Factuur";
-  try {
-    await apiRequest("/api/invoices/mail-pdf", {
-      method: "POST",
-      headers: getApiHeaders(),
-      body: JSON.stringify({
-        to: invoice.customerEmail,
-        invoice,
-        subject: `${subjectPrefix} ${invoice.number} - ${invoice.customer}`,
-        text:
-          `${type === "reminder" ? "Dit is een herinnering voor de openstaande factuur." : "In de bijlage vind je de factuur in PDF."}\n` +
-          `Factuur: ${invoice.number}\nOmschrijving: ${invoice.title}\nBedrag excl. btw: ${formatEur(invoice.amount)}\n` +
-          `BTW: ${invoice.vat}%\nVervaldatum: ${invoice.dueDate}\n\nMet vriendelijke groet,\nModeliq`
-      })
-    });
-  } catch {
-    await sendInvoiceMail(invoice, type);
-  }
-}
-
-function markInvoicePaid(invoice) {
-  invoice.status = "paid";
-  invoice.paidDate = new Date().toISOString().slice(0, 10);
-  if (automationSettings.autoBookOnPaid) {
-    const existing = bookkeepingEntries.find((entry) => entry.invoiceId === invoice.id);
-    if (!existing) {
-      bookkeepingEntries.unshift({
-        id: createId("book"),
-        invoiceId: invoice.id,
-        quoteId: invoice.quoteId,
-        date: invoice.paidDate,
-        type: "income",
-        description: `Betaling ${invoice.number} - ${invoice.customer}`,
-        amount: invoice.amount,
-        vat: invoice.vat
-      });
-      saveBookkeeping();
-      renderBookkeeping();
-    }
-  }
-}
-
 function renderInvoices() {
-  if (!invoiceRows) {
-    return;
-  }
-  const today = new Date().toISOString().slice(0, 10);
-  invoiceRows.innerHTML = "";
-  invoices.forEach((invoice) => {
-    const overdue = invoice.status !== "paid" && dayDiff(invoice.dueDate, today) > 0;
-    const statusLabel = overdue ? "overdue" : invoice.status;
-    const row = document.createElement("tr");
-    row.innerHTML = `<td>${invoice.number}</td>
-      <td>${invoice.customer}</td>
-      <td>${formatEur(invoice.amount)}</td>
-      <td>${invoice.dueDate}</td>
-      <td><span class="invoice-status ${statusLabel}">${statusLabel.toUpperCase()}</span></td>
-      <td>
-        <div class="invoice-actions">
-          <button type="button" class="mini-btn" data-invoice-id="${invoice.id}" data-invoice-action="send">Verstuur</button>
-          <button type="button" class="mini-btn" data-invoice-id="${invoice.id}" data-invoice-action="reminder">Herinner</button>
-          <button type="button" class="mini-btn" data-invoice-id="${invoice.id}" data-invoice-action="pdf">Download PDF</button>
-          <button type="button" class="mini-btn" data-invoice-id="${invoice.id}" data-invoice-action="template">Sjabloon</button>
-          <button type="button" class="mini-btn" data-invoice-id="${invoice.id}" data-invoice-action="paid">Betaald</button>
-        </div>
-      </td>`;
-    invoiceRows.appendChild(row);
-  });
   refreshDashboard();
 }
 
-function runInvoiceAutomation(showStatus = true) {
+function runInvoiceAutomation() {
   const today = new Date().toISOString().slice(0, 10);
-  let reminders = 0;
   invoices.forEach((invoice) => {
     if (invoice.status === "paid") {
       return;
@@ -1908,98 +1774,10 @@ function runInvoiceAutomation(showStatus = true) {
     const nextReminderMilestone = automationSettings.reminderDays[invoice.remindersSent] || null;
     if (invoice.status === "overdue" && nextReminderMilestone !== null && daysLate >= nextReminderMilestone) {
       invoice.remindersSent += 1;
-      reminders += 1;
     }
   });
   saveInvoices();
   renderInvoices();
-  if (showStatus && invoiceStatus) {
-    invoiceStatus.textContent = reminders > 0 ? `${reminders} herinneringen klaar om te versturen.` : "Automatisering uitgevoerd.";
-  }
-}
-
-function invoiceTemplateMarkup(invoice) {
-  const vatAmount = (invoice.amount * invoice.vat) / 100;
-  const totalIncl = invoice.amount + vatAmount;
-  const statusLabel = invoice.status === "paid" ? "Betaald" : invoice.status === "overdue" ? "Achterstallig" : "Open";
-  return `<article class="invoice-doc">
-    <header class="invoice-doc-head">
-      <div>
-        <div class="invoice-doc-logo">MODELIQ</div>
-        <div>AI Automation & Agents</div>
-      </div>
-      <div class="invoice-doc-meta">
-        <div><strong>Factuur:</strong> ${invoice.number}</div>
-        <div><strong>Datum:</strong> ${invoice.issueDate}</div>
-        <div><strong>Vervaldatum:</strong> ${invoice.dueDate}</div>
-        <div><strong>Status:</strong> ${statusLabel}</div>
-      </div>
-    </header>
-    <section>
-      <h3>Factuur aan</h3>
-      <div><strong>${invoice.customer}</strong></div>
-      <div>Referentie offerte: ${invoice.quoteNumber || "-"}</div>
-    </section>
-    <table class="invoice-doc-table">
-      <thead>
-        <tr>
-          <th>Omschrijving</th>
-          <th>Excl. btw</th>
-          <th>BTW</th>
-          <th>Totaal</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>${invoice.title}</td>
-          <td>${formatEur(invoice.amount)}</td>
-          <td>${invoice.vat}% (${formatEur(vatAmount)})</td>
-          <td>${formatEur(totalIncl)}</td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="invoice-doc-total">
-      <div><strong>Totaal excl. btw:</strong> ${formatEur(invoice.amount)}</div>
-      <div><strong>Totaal incl. btw:</strong> ${formatEur(totalIncl)}</div>
-    </div>
-  </article>`;
-}
-
-function openInvoiceTemplate(invoice) {
-  activeInvoiceTemplate = invoice;
-  if (invoiceTemplateContent) {
-    invoiceTemplateContent.innerHTML = invoiceTemplateMarkup(invoice);
-  }
-  invoiceTemplateModal?.classList.add("active");
-  invoiceTemplateModal?.setAttribute("aria-hidden", "false");
-}
-
-function closeInvoiceTemplate() {
-  invoiceTemplateModal?.classList.remove("active");
-  invoiceTemplateModal?.setAttribute("aria-hidden", "true");
-}
-
-function printActiveInvoiceTemplate() {
-  if (!activeInvoiceTemplate) {
-    return;
-  }
-  const html = invoiceTemplateMarkup(activeInvoiceTemplate);
-  const popup = window.open("", "_blank", "width=900,height=700");
-  if (!popup) {
-    return;
-  }
-  popup.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${activeInvoiceTemplate.number}</title><style>
-    body{font-family:Segoe UI,Arial,sans-serif;background:#fff;color:#121826;margin:0;padding:24px}
-    .invoice-doc-head{display:flex;justify-content:space-between;gap:16px;margin-bottom:16px}
-    .invoice-doc-logo{font-weight:700;letter-spacing:.2em;font-size:18px;color:#1c2a68}
-    .invoice-doc-meta{text-align:right;font-size:14px}
-    .invoice-doc-table{width:100%;border-collapse:collapse;margin-top:12px}
-    .invoice-doc-table th,.invoice-doc-table td{border-bottom:1px solid #d9dfec;padding:8px 6px;text-align:left;font-size:14px}
-    .invoice-doc-total{margin-top:14px;text-align:right;font-size:14px}
-  </style></head><body>${html}</body></html>`);
-  popup.document.close();
-  popup.focus();
-  popup.print();
 }
 
 function addQuoteToBookkeeping(quote) {
@@ -2027,9 +1805,9 @@ leadBtn.addEventListener("click", () => {
 leadToggle.addEventListener("click", () => {
   openLeadDock();
 });
-leadClose.addEventListener("click", () => {
-  leadDock.classList.remove("open");
-});
+leadClose.addEventListener("click", closeLeadDock);
+overlayScrim?.addEventListener("click", goHomeView);
+leadBackBtn?.addEventListener("click", goHomeView);
 aiHomeBtn.addEventListener("click", goHomeView);
 openIntakeTop.addEventListener("click", () => {
   openLeadDock();
@@ -2053,20 +1831,21 @@ if (!isCoarsePointer) {
 }
 
 window.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && portal.classList.contains("active")) {
+  if (event.key !== "Escape") return;
+  if (portal.classList.contains("active")) {
     closePortal();
     return;
   }
-  if (event.key === "Escape" && invoiceTemplateModal?.classList.contains("active")) {
-    closeInvoiceTemplate();
-    return;
-  }
-  if (event.key === "Escape" && caseModal.classList.contains("active")) {
+  if (caseModal.classList.contains("active")) {
     closeCaseModal();
     return;
   }
-  if (event.key === "Escape" && leadDock.classList.contains("open")) {
-    leadDock.classList.remove("open");
+  if (document.body.classList.contains("admin-open")) {
+    goHomeView();
+    return;
+  }
+  if (document.body.classList.contains("lead-open") || leadDock.classList.contains("open")) {
+    goHomeView();
   }
 });
 
@@ -2098,9 +1877,11 @@ openAdminBtn.addEventListener("click", async () => {
 });
 adminCloseBtn.addEventListener("click", closeAdminModal);
 adminLogoutBtn.addEventListener("click", () => {
-  adminDock.classList.remove("open");
-  document.body.classList.remove("admin-open");
+  goHomeView();
   adminSaveStatus.textContent = "Paneel gesloten. Je blijft ingelogd.";
+});
+adminBackBtn?.addEventListener("click", () => {
+  goHomeView();
 });
 adminTabs.forEach((tab) => {
   tab.addEventListener("click", () => {
@@ -2267,6 +2048,7 @@ if (bookkeepingForm) {
       defaultType.value = "income";
     }
     bookStatus.textContent = "Boeking toegevoegd.";
+    bookStatus.scrollIntoView({ behavior: "smooth", block: "nearest" });
   });
 }
 
@@ -2439,6 +2221,7 @@ if (quoteForm) {
       quoteVatInput.value = "21";
     }
     quoteStatus.textContent = `Offerte ${quoteNumber} aangemaakt.`;
+    quoteStatus.scrollIntoView({ behavior: "smooth", block: "nearest" });
   });
 }
 
@@ -2465,10 +2248,7 @@ if (quoteBoard) {
       quote.status = "accepted";
     } else if (action === "invoice") {
       quote.status = "invoiced";
-      const invoice = createInvoiceFromQuote(quote);
-      if (invoiceStatus) {
-        invoiceStatus.textContent = `Factuur ${invoice.number} aangemaakt vanuit ${quote.number}.`;
-      }
+      createInvoiceFromQuote(quote);
     } else if (action === "draft") {
       quote.status = "draft";
     } else if (action === "cancel") {
@@ -2480,69 +2260,6 @@ if (quoteBoard) {
     quoteStatus.textContent = "Flow bijgewerkt.";
   });
 }
-
-if (invoiceRows) {
-  invoiceRows.addEventListener("click", async (event) => {
-    const target = event.target;
-    if (!(target instanceof HTMLElement)) {
-      return;
-    }
-    const invoiceId = target.getAttribute("data-invoice-id");
-    const action = target.getAttribute("data-invoice-action");
-    if (!invoiceId || !action) {
-      return;
-    }
-    const invoice = invoices.find((item) => item.id === invoiceId);
-    if (!invoice) {
-      return;
-    }
-    try {
-      if (action === "send") {
-        invoice.status = "sent";
-        await mailInvoicePdf(invoice, "invoice");
-      } else if (action === "reminder") {
-        await mailInvoicePdf(invoice, "reminder");
-        invoice.remindersSent += 1;
-      } else if (action === "pdf") {
-        const mode = await downloadInvoicePdf(invoice);
-        if (invoiceStatus) {
-          invoiceStatus.textContent =
-            mode === "download"
-              ? `PDF voor ${invoice.number} gedownload.`
-              : `API URL ontbreekt: printdialoog geopend voor ${invoice.number}.`;
-        }
-      } else if (action === "template") {
-        openInvoiceTemplate(invoice);
-      } else if (action === "paid") {
-        markInvoicePaid(invoice);
-      }
-      saveInvoices();
-      renderInvoices();
-      if (invoiceStatus && action !== "pdf") {
-        invoiceStatus.textContent =
-          action === "pdf" ? `PDF voor ${invoice.number} gedownload.` : `Factuur ${invoice.number} bijgewerkt.`;
-      }
-    } catch (error) {
-      if (invoiceStatus) {
-        invoiceStatus.textContent = error instanceof Error ? error.message : "Factuuractie mislukt.";
-      }
-    }
-  });
-}
-
-if (invoiceRunAutomationBtn) {
-  invoiceRunAutomationBtn.addEventListener("click", () => {
-    runInvoiceAutomation(true);
-  });
-}
-
-invoiceTemplateClose?.addEventListener("click", closeInvoiceTemplate);
-invoiceTemplateModal?.addEventListener("click", (event) => {
-  if (event.target === invoiceTemplateModal) {
-    closeInvoiceTemplate();
-  }
-});
-invoiceTemplatePrint?.addEventListener("click", printActiveInvoiceTemplate);
 
 if (automationForm) {
   automationForm.addEventListener("submit", (event) => {
@@ -2728,7 +2445,7 @@ async function initApp() {
   loadQuotes();
   await loadBankLinkStatus();
   loadCandidates();
-  runInvoiceAutomation(false);
+  runInvoiceAutomation();
   initClickEverywhere();
 }
 initApp();
