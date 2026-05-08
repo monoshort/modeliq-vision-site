@@ -2745,3 +2745,60 @@ if (vatPeriodQuarter && !vatPeriodQuarter.value) {
   vatPeriodQuarter.value = String(Math.ceil((new Date().getMonth() + 1) / 3));
 }
 renderVatReport();
+
+// Intro gate: welcome universe shown before the word solar system.
+// Dismissed via the big CTA, Enter / Space keys, or by clicking the gate background.
+(function setupIntroGate() {
+  const gate = document.getElementById("introGate");
+  const enterBtn = document.getElementById("introEnterBtn");
+  if (!gate || !enterBtn) return;
+
+  const body = document.body;
+  let dismissed = false;
+
+  function enterUniverse() {
+    if (dismissed) return;
+    dismissed = true;
+    body.classList.add("intro-leaving");
+    body.classList.remove("intro-locked");
+    setTimeout(() => {
+      gate.remove();
+      body.classList.remove("intro-leaving");
+      try {
+        sessionStorage.setItem("modeliq:introSeen", "1");
+      } catch (_e) {
+        // ignore storage failures (private mode etc.)
+      }
+    }, 950);
+  }
+
+  // Skip intro on subsequent navigations within the same session.
+  try {
+    if (sessionStorage.getItem("modeliq:introSeen") === "1") {
+      gate.remove();
+      body.classList.remove("intro-locked");
+      return;
+    }
+  } catch (_e) {
+    // ignore
+  }
+
+  enterBtn.addEventListener("click", enterUniverse);
+
+  document.addEventListener("keydown", function onKey(event) {
+    if (dismissed) return;
+    if (event.key === "Enter" || event.key === " " || event.key === "Spacebar") {
+      event.preventDefault();
+      enterUniverse();
+    }
+  });
+
+  // Focus the CTA so keyboard users can press Enter immediately.
+  setTimeout(() => {
+    try {
+      enterBtn.focus({ preventScroll: true });
+    } catch (_e) {
+      enterBtn.focus();
+    }
+  }, 400);
+})();

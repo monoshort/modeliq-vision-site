@@ -1610,3 +1610,353 @@ body.admin-open .hud-actions {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ============================================================
+   Intro gate (landing) -- the welcome universe before the
+   word solar system. Sits on top of everything until the user
+   clicks "Betreed het universum".
+   ============================================================ */
+
+body.intro-locked {
+  overflow: hidden;
+}
+
+body.intro-locked .hud,
+body.intro-locked .space,
+body.intro-locked .quick-actions,
+body.intro-locked .lead-toggle,
+body.intro-locked .lead-dock,
+body.intro-locked .portfolio-dock,
+body.intro-locked .agent-dock,
+body.intro-locked .admin-dock,
+body.intro-locked .portal {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.7s ease, visibility 0.7s;
+}
+
+body.intro-leaving .hud,
+body.intro-leaving .space {
+  opacity: 1;
+  visibility: visible;
+}
+
+.intro-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1.5rem;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(28, 24, 80, 0.55) 0%, rgba(5, 5, 14, 0.92) 55%, #000 100%),
+    radial-gradient(circle at 18% 22%, rgba(123, 123, 255, 0.22), transparent 55%),
+    radial-gradient(circle at 82% 78%, rgba(0, 178, 255, 0.18), transparent 55%);
+  color: #f4f6ff;
+  opacity: 1;
+  transition: opacity 0.9s ease, transform 0.9s ease, filter 0.9s ease;
+}
+
+.intro-gate::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.85) 0 1px, transparent 2px),
+    radial-gradient(circle at 33% 41%, rgba(255, 255, 255, 0.55) 0 1px, transparent 2px),
+    radial-gradient(circle at 56% 24%, rgba(255, 255, 255, 0.7) 0 1px, transparent 2px),
+    radial-gradient(circle at 71% 58%, rgba(255, 255, 255, 0.6) 0 1px, transparent 2px),
+    radial-gradient(circle at 88% 31%, rgba(255, 255, 255, 0.7) 0 1px, transparent 2px),
+    radial-gradient(circle at 22% 76%, rgba(255, 255, 255, 0.55) 0 1px, transparent 2px),
+    radial-gradient(circle at 47% 88%, rgba(255, 255, 255, 0.7) 0 1px, transparent 2px),
+    radial-gradient(circle at 78% 84%, rgba(255, 255, 255, 0.5) 0 1px, transparent 2px);
+  opacity: 0.55;
+  animation: introTwinkle 5s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+body.intro-leaving .intro-gate {
+  opacity: 0;
+  transform: scale(1.18);
+  filter: blur(8px);
+  pointer-events: none;
+}
+
+@keyframes introTwinkle {
+  from { opacity: 0.35; }
+  to   { opacity: 0.75; }
+}
+
+.intro-vortex {
+  position: relative;
+  width: min(72vw, 460px);
+  height: min(72vw, 460px);
+  display: grid;
+  place-items: center;
+  margin-bottom: 2.2rem;
+  pointer-events: none;
+}
+
+.intro-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(186, 203, 255, 0.35);
+  box-shadow:
+    0 0 30px rgba(123, 123, 255, 0.18) inset,
+    0 0 40px rgba(0, 178, 255, 0.08);
+}
+
+.intro-ring-1 {
+  width: 100%;
+  height: 100%;
+  border-color: rgba(186, 203, 255, 0.3);
+  animation: introSpin 26s linear infinite;
+  border-style: dashed;
+}
+
+.intro-ring-2 {
+  width: 76%;
+  height: 76%;
+  border-color: rgba(123, 123, 255, 0.55);
+  animation: introSpinReverse 18s linear infinite;
+}
+
+.intro-ring-3 {
+  width: 52%;
+  height: 52%;
+  border-color: rgba(0, 178, 255, 0.5);
+  animation: introSpin 12s linear infinite;
+  border-style: dotted;
+}
+
+.intro-core {
+  position: absolute;
+  width: 32%;
+  height: 32%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, #ffffff 0%, #b9c2ff 18%, #6c6cff 38%, #1f1d6a 70%, transparent 100%);
+  box-shadow:
+    0 0 60px rgba(123, 123, 255, 0.85),
+    0 0 120px rgba(0, 178, 255, 0.45),
+    0 0 200px rgba(123, 123, 255, 0.35);
+  animation: introPulse 3.6s ease-in-out infinite;
+}
+
+@keyframes introSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes introSpinReverse {
+  to { transform: rotate(-360deg); }
+}
+
+@keyframes introPulse {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50%      { transform: scale(1.07); filter: brightness(1.18); }
+}
+
+.intro-content {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  gap: 1.1rem;
+  max-width: min(92vw, 640px);
+  margin-top: -1.2rem;
+}
+
+.intro-eyebrow {
+  margin: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: rgba(220, 226, 255, 0.65);
+  font-family: "Orbitron", "Segoe UI", sans-serif;
+}
+
+.intro-title {
+  margin: 0;
+  font-family: "Orbitron", "Segoe UI", sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.4rem, 8vw, 5rem);
+  letter-spacing: 0.22em;
+  line-height: 1;
+  background: linear-gradient(180deg, #ffffff 0%, #c8d0ff 55%, #7b7bff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 40px rgba(123, 123, 255, 0.35);
+}
+
+.intro-title-sub {
+  display: inline-block;
+  margin-top: 0.55rem;
+  font-size: 0.36em;
+  letter-spacing: 0.5em;
+  font-weight: 600;
+  color: #c4cdff;
+  background: none;
+  -webkit-text-fill-color: #c4cdff;
+  text-shadow: 0 0 18px rgba(118, 146, 255, 0.45);
+}
+
+.intro-tagline {
+  margin: 0;
+  font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+  line-height: 1.55;
+  color: rgba(232, 236, 255, 0.82);
+  max-width: 38ch;
+}
+
+.intro-cta {
+  position: relative;
+  margin-top: 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.05rem 2.2rem;
+  min-height: 64px;
+  font-family: "Orbitron", "Segoe UI", sans-serif;
+  font-size: clamp(1rem, 1.6vw, 1.15rem);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: linear-gradient(135deg, rgba(123, 123, 255, 0.95) 0%, rgba(0, 178, 255, 0.95) 100%);
+  border: 1px solid rgba(220, 228, 255, 0.55);
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+    0 14px 40px rgba(0, 178, 255, 0.35),
+    0 6px 20px rgba(123, 123, 255, 0.45);
+  isolation: isolate;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, letter-spacing 0.25s ease;
+  overflow: hidden;
+}
+
+.intro-cta:hover {
+  transform: translateY(-2px) scale(1.03);
+  letter-spacing: 0.26em;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+    0 18px 50px rgba(0, 178, 255, 0.5),
+    0 8px 26px rgba(123, 123, 255, 0.55);
+}
+
+.intro-cta:active {
+  transform: translateY(0) scale(0.99);
+}
+
+.intro-cta:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 4px;
+}
+
+.intro-cta-glow {
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: conic-gradient(from 0deg, rgba(123, 123, 255, 0.0), rgba(0, 178, 255, 0.55), rgba(255, 255, 255, 0.7), rgba(123, 123, 255, 0.0));
+  filter: blur(14px);
+  z-index: -1;
+  animation: introCtaGlow 4.5s linear infinite;
+  opacity: 0.85;
+}
+
+@keyframes introCtaGlow {
+  to { transform: rotate(360deg); }
+}
+
+.intro-cta-arrow {
+  display: inline-block;
+  transition: transform 0.25s ease;
+  font-weight: 800;
+}
+
+.intro-cta:hover .intro-cta-arrow {
+  transform: translateX(4px);
+}
+
+.intro-hint {
+  margin: 0.3rem 0 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(220, 226, 255, 0.5);
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  line-height: 1.6;
+}
+
+.intro-hint kbd {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.18rem 0.55rem;
+  border: 1px solid rgba(186, 203, 255, 0.45);
+  border-radius: 6px;
+  background: rgba(10, 14, 32, 0.55);
+  font-family: "Orbitron", "Segoe UI", sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: #edf2ff;
+  line-height: 1;
+}
+
+.intro-footer {
+  position: absolute;
+  bottom: 1.4rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(220, 226, 255, 0.45);
+}
+
+.intro-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #7b7bff;
+  box-shadow: 0 0 10px rgba(123, 123, 255, 0.9);
+  animation: introPulse 2.4s ease-in-out infinite;
+}
+
+@media (max-width: 520px) {
+  .intro-vortex {
+    width: 78vw;
+    height: 78vw;
+    margin-bottom: 1.2rem;
+  }
+
+  .intro-cta {
+    padding: 0.95rem 1.6rem;
+    min-height: 58px;
+    letter-spacing: 0.18em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-ring,
+  .intro-core,
+  .intro-cta-glow,
+  .intro-dot {
+    animation: none !important;
+  }
+
+  body.intro-leaving .intro-gate {
+    transform: none;
+    filter: none;
+  }
+}
